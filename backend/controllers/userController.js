@@ -1,4 +1,3 @@
-const { log } = require("console")
 const userModel=require("../models/userModel")
 const bcrypt=require("bcrypt")
 const jwt =require("jsonwebtoken")
@@ -9,7 +8,7 @@ const registerUser=async(req,res)=>{
 try {
    const userExists=await userModel.find({email:req.body.email})
 if(userExists.length>0){
-   console.log(userExists);
+   // console.log(userExists);
    res.status(400).json({message:"user already exists",userExists})
 }else{
    if(req.body.email && req.body.password && req.body.name ){
@@ -40,7 +39,7 @@ const loginUser=async(req,res)=>{
       return res.status(400).json({message:"User dosent exist. please register"})
    }
    const matchPassword=await bcrypt.compare(req.body.password,userExists.password)
-   console.log(matchPassword);
+   // console.log(matchPassword);
    if(!matchPassword){
      return res.status(400).json({message:"Password incorrect"})
    }
@@ -50,7 +49,7 @@ const loginUser=async(req,res)=>{
       email:userExists.email,
       token: await generateToken(userExists._id)
    }
-   console.log(user);
+   // console.log(user);
    res.status(200).json({message:"loggin success",user})
    
  } catch (error) {
@@ -60,7 +59,14 @@ const loginUser=async(req,res)=>{
 }
 
 const getUser=async(req,res)=>{
+   // const user=await userModel.find({_id:req.user.id}) // find returns an aray so we can't destructure directly
+   // console.log(user,"///user////");
 
+   // const {email,name,_id}=await userModel.findOne({_id:req.user.id})
+   console.log(req.user,"req.user////");
+const {email,name,_id}=await userModel.findById(req.user.id)
+console.log(_id,"///user////");
+res.status(200).json({_id,name,email})
 }
 
 
